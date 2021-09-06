@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.market.dao.MemberDao">
+
+    <!-- 根据order 的 id（英文字母组成的唯一的字符串）查询订单 -->
+    <select id="findById" parameterType="String" resultType="Member">
+        select * from member where id = #{id}
+    </select>
+</mapper>

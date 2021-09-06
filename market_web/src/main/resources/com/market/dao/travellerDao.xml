@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.market.dao.TravellerDao">
+
+    <!-- 根据order 的 id（英文字母组成的唯一的字符串）查询订单 -->
+    <select id="findTravellersById" parameterType="String" resultType="traveller">
+        select t.id, t.`NAME`, t.credentialsNum, t.credentialsType, t.phoneNum, t.sex, t.travellerType
+        from traveller t
+        where t.id in (
+            select ot.travellerId id
+            from order_traveller ot
+                     inner join orders o
+                                on ot.orderId = o.id and o.id = #{id}
+        )
+    </select>
+</mapper>

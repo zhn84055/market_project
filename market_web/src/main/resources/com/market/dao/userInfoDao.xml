@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.market.dao.UserInfoDao">
+
+    <!-- userInfo==>roles -->
+    <resultMap id="userRoleInfoMap" type="UserInfo">
+        <id column="id" property="id"/>
+        <result column="username" property="username"/>
+        <result column="password" property="password"/>
+        <result column="phoneNum" property="phoneNum"/>
+        <result column="email" property="email"/>
+        <result column="status" property="status"/>
+        <collection property="roles" column="id" javaType="ArrayList" ofType="role"
+                    select="com.market.dao.RoleDao.findRoleByUserId" fetchType="lazy"/>
+    </resultMap>
+    <!--根据username查询用户信息-->
+    <select id="findUserByName" parameterType="String" resultMap="userRoleInfoMap">
+        select * from users where username = #{username}
+    </select>
+
+    <!-- 查询所有用户信息 -->
+    <select id="findAll" resultType="userInfo" >
+        select * from users
+    </select>
+
+    <!-- 新增用户信息 -->
+    <insert id="save" parameterType="userInfo" >
+        insert into users (username,password,phoneNum,email,status)
+        values (#{username},#{password},#{phoneNum},#{email},#{status});
+    </insert>
+
+    <!-- 根据user 的id查询 user-->
+    <select id="findById" parameterType="String" resultMap="userRoleInfoMap">
+        select * from users where id= #{id}
+    </select>
+
+    <!-- 添加<user,role>的映射关系 —— 给user添加 role-->
+    <!-- 多个参数时，mybatis会做特殊处理；多个参数会被封装成一个map
+　　　　　　key：param1，param2，.......paramN
+　　　　　　value：传入的参数值
+　　　　　　#{ }就是从map中获取指定key的值 -->
+    <insert id="addRoleToUser" parameterType="String" >
+        insert into users_role (userId,roleId) values (#{param1},#{param2});
+    </insert>
+</mapper>

@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+        http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.2.xsd
+        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.3.xsd">
+
+    <!--开启mvc注解驱动 springmvc注解支持-->
+    <mvc:annotation-driven/>
+
+    <!--开启mvc注解扫描，只扫描com.zhn.ssm下的Controller注解，use-default-filters="false" 表示使用自定义filter-->
+    <context:component-scan base-package="com.market.controller" use-default-filters="false">
+        <!--扫描-->
+        <context:include-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+        <!--不扫描-->
+        <!--<context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller"/>-->
+    </context:component-scan>
+
+    <!--配置视图解析器-->
+    <bean id="internalResourceViewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="prefix" value="/pages/"/><!--value="/"-->
+        <property name="suffix" value=".jsp"/>
+    </bean>
+
+    <!--过滤静态资源(设置静态资源不过滤)-->
+    <mvc:resources location="/css/" mapping="/css/**"/>
+    <mvc:resources location="/img/" mapping="/img/**"/>
+    <!--    <mvc:resources location="/js/" mapping="/js/**"/>-->
+    <mvc:resources location="/plugins/" mapping="/plugins/**"/>
+
+    <!--
+        支持AOP的注解支持，AOP底层使用代理技术
+        JDK动态代理，要求必须有接口
+        cglib代理，生成子类对象，proxy-target-class="true" 默认使用cglib的方式
+    -->
+    <aop:aspectj-autoproxy proxy-target-class="true"/>
+
+    <!--    &lt;!&ndash; 注册ConversionService&ndash;&gt;-->
+    <!--    <bean id="conversionService" class="org.springframework.format.support.FormattingConversionServiceFactoryBean">-->
+    <!--        <property name="converters">-->
+    <!--            <set>-->
+    <!--                <bean class="com.ezubo.global.portal.util.StringToDateConverter">-->
+    <!--                    <constructor-arg index="0" value="yyyy-MM-dd hh:mm"/>-->
+    <!--                </bean>-->
+    <!--            </set>-->
+    <!--        </property>-->
+    <!--    </bean>-->
+
+    <!--    <mvc:annotation-driven conversion-service="conversionService">-->
+    <!--        <mvc:message-converters register-defaults="true">-->
+    <!--            <bean class="com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter">-->
+    <!--                <property name="supportedMediaTypes" value="text/html;charset=UTF-8"/>-->
+    <!--                &lt;!&ndash;转换时设置特性&ndash;&gt;-->
+    <!--                <property name="features">-->
+    <!--                    <array>-->
+    <!--                        &lt;!&ndash;避免默认的循环引用替换&ndash;&gt;-->
+    <!--                        <ref bean="DisableCircularReferenceDetect"/>-->
+    <!--                        <ref bean="WriteMapNullValue"/>-->
+    <!--                        <ref bean="WriteNullStringAsEmpty"/>-->
+    <!--                        <ref bean="WriteNullNumberAsZero"/>-->
+    <!--                    </array>-->
+    <!--                </property>-->
+    <!--            </bean>-->
+    <!--        </mvc:message-converters>-->
+    <!--    </mvc:annotation-driven>-->
+
+
+    <!-- 使用thymeleaf解析 -->
+    <!--    <bean id="templateResolver" class="org.thymeleaf.spring5.templateresolver.SpringResourceTemplateResolver">-->
+    <!--        <property name="prefix" value="/templates/"/>-->
+    <!--        <property name="suffix" value=".html"/>-->
+    <!--        <property name="templateMode" value="HTML"/>-->
+    <!--        <property name="cacheable" value="false"/>-->
+    <!--        <property name="characterEncoding" value="UTF-8"/>-->
+    <!--    </bean>-->
+
+    <!--    <bean id="templateEngine" class="org.thymeleaf.spring5.SpringTemplateEngine">-->
+    <!--        <property name="templateResolver" ref="templateResolver"/>-->
+    <!--    </bean>-->
+
+    <!-- 配置多个视图解析时，将此部分注释 -->
+    <!--    <bean id="thymeleafViewResolver" class="org.thymeleaf.spring5.view.ThymeleafViewResolver">-->
+    <!--        <property name="order" value="1"/>-->
+    <!--        <property name="characterEncoding" value="UTF-8"/>-->
+    <!--        <property name="templateEngine" ref="templateEngine"/>-->
+    <!--    </bean>-->
+
+    <!--  配置多个视图解析-->
+    <!--    <bean class="org.springframework.web.servlet.view.ContentNegotiatingViewResolver">-->
+
+    <!--        <property name="viewResolvers">-->
+    <!--            <list>-->
+    <!--                &lt;!&ndash;used thymeleaf  &ndash;&gt;-->
+    <!--                <bean class="org.thymeleaf.spring3.view.ThymeleafViewResolver">-->
+    <!--                    <property name="characterEncoding" value="UTF-8"/>-->
+    <!--                    <property name="templateEngine" ref="templateEngine" />-->
+    <!--                    <property name="viewNames" value="th*,base/*"/>-->
+    <!--                    <property name="order" value="2" />-->
+    <!--                </bean>-->
+    <!--                &lt;!&ndash; used jsp &ndash;&gt;-->
+    <!--                <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">-->
+    <!--                    <property name="prefix" value="/jsp/"/>-->
+    <!--                    <property name="suffix" value=".jsp"/>-->
+    <!--                    <property name="viewNames" value="jsp*"/>-->
+    <!--                    <property name="order" value="1" />-->
+    <!--                </bean>-->
+
+    <!--            </list>-->
+    <!--        </property>-->
+    <!--    </bean>-->
+
+</beans>

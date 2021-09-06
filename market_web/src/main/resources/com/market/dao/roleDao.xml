@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.market.dao.RoleDao">
+
+    <!-- role ==> Permission 的映射 -->
+    <resultMap id="rolePermissionMap" type="role">
+        <id column="id" property="id"/>
+        <result column="roleName" property="roleName"/>
+        <result column="roleDesc" property="roleDesc"/>
+        <collection column="id" property="permissions" javaType="ArrayList" ofType="Permission"
+                    select="com.market.dao.PermissionDao.findPermissionByRoleId" fetchType="lazy"/>
+    </resultMap>
+
+    <!--根据userId查询Role信息-->
+    <select id="findRoleByUserId" parameterType="String" resultMap="rolePermissionMap">
+        select * from role
+        where id in (
+            select roleId from users_role
+            where userId = #{id}
+        )
+    </select>
+
+    <!-- 查询所有角色信息 -->
+    <select id="findAll" resultType="Role">
+        select * from role
+    </select>
+
+    <!-- 新增角色信息 -->
+    <insert id="save" parameterType="role">
+        insert into role (roleName, roleDesc) values (#{roleName}, #{roleDesc})
+    </insert>
+
+    <!--根据RoleId查询role信息-->
+    <select id="findByRoleId" parameterType="String" resultMap="rolePermissionMap">
+        select * from role where id = #{id}
+    </select>
+
+    <!--根据roleId删除角色信息-->
+    <delete id="deleteRoleById" parameterType="String">
+        delete from role where id = #{id}
+    </delete>
+
+    <!-- 根据roleId删除User_Role的映射 -->
+    <delete id="deleteFromUser_RoleByRoleId" parameterType="String">
+        delete from users_role where roleId = #{roleId}
+    </delete>
+
+    <!-- 根据roleId删除Role_Permission的映射 -->
+    <delete id="deleteFromRole_PermissionByRoleId" parameterType="String">
+        delete from role_permission where roleId = #{roleId}
+    </delete>
+
+    <!-- 根据userId查询未关联的角色信息 -->
+    <select id="findRolesNotAssociated" parameterType="String" resultMap="rolePermissionMap">
+        select * from role where id not in (
+            select roleId from users_role where userId = #{userId}
+        )
+    </select>
+
+</mapper>

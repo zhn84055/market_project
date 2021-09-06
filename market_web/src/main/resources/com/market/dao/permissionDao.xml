@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.market.dao.PermissionDao">
+
+    <!-- 根据order 的 id（英文字母组成的唯一的字符串）查询订单 -->
+    <select id="findPermissionByRoleId" parameterType="String" resultType="permission">
+        SELECT p.id, p.permissionName, p.url FROM permission p
+        WHERE p.id IN (
+            SELECT rp.permissionId FROM role_permission rp
+            where rp.roleId = #{id}
+        )
+    </select>
+
+    <!-- 查询所有权限信息 -->
+    <select id="findAll" resultType="permission">
+        select * from permission
+    </select>
+
+    <!-- 新增权限信息 -->
+    <insert id="save" parameterType="permission">
+        insert into permission (permissionName, url) values (#{permissionName}, #{url})
+    </insert>
+
+    <!-- 根据permissionId删除权限 -->
+    <delete id="deletePermissionById" parameterType="String">
+        delete from permission where id = #{id}
+    </delete>
+
+    <!-- 根据permissionId删除Role_Permission映射关系 -->
+    <delete id="deleteFromRole_PermissionByPermissionId" parameterType="String">
+        delete from role_permission where permissionId = #{id}
+    </delete>
+
+    <!-- 根据 roleId 查询 role 和 permissions -->
+    <select id="findPermissionsNotAssociated" resultType="permission">
+        select * from permission
+        where id not in (
+            select permissionId from role_permission where roleId = #{id}
+        )
+    </select>
+
+    <!-- 添加<role,permission>的映射关系 —— 给role添加 permission-->
+    <!-- 多个参数时，mybatis会做特殊处理；多个参数会被封装成一个map
+　　　　　　key：param1，param2，.......paramN
+　　　　　　value：传入的参数值
+　　　　　　#{ }就是从map中获取指定key的值 -->
+    <insert id="addPermissionToRole" parameterType="String">
+        insert into role_permission (roleId,permissionId) values (#{param1},#{param2});
+    </insert>
+</mapper>

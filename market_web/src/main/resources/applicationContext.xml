@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:content="http://www.springframework.org/schema/context"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.3.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.3.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd">
+
+    <!--开启注解扫描(扫描多个包可用逗号隔开)-->
+    <context:component-scan base-package="com.market.dao,com.market.service">
+    </context:component-scan>
+<!--    <context:component-scan base-package="com.market.service">-->
+<!--    </context:component-scan>-->
+
+    <!--连接外部资源 数据源-->
+    <context:property-placeholder location="classpath:db.properties"/>
+
+    <!--配置 C3P0数据源 -->
+    <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+        <property name="driverClass" value="${jdbc.driver}"/>
+        <property name="jdbcUrl" value="${jdbc.url}"/>
+        <property name="user" value="${jdbc.username}"/>
+        <property name="password" value="${jdbc.password}"/>
+    </bean>
+
+    <!--配置 sqlSessionFactory-->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="dataSource"/>
+        <property name="configLocation" value="classpath:mybatis.xml"/>
+        <property name="mapperLocations" value="classpath:com/market/dao/*.xml"/>
+        <!-- 传入PageHelper的插件 -->
+        <property name="plugins">
+            <array>
+                <!-- 传入插件的对象 -->
+                <bean class="com.github.pagehelper.PageInterceptor">
+                    <property name="properties">
+                        <props>
+                            <prop key="helperDialect">mysql</prop>
+                            <prop key="reasonable">true</prop>
+                        </props>
+                    </property>
+                </bean>
+            </array>
+        </property>
+    </bean>
+
+    <!--扫描mapper接口-->
+    <bean id="mapper" class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="basePackage" value="com.market.dao"/>
+    </bean>
+
+    <!-- spring事务管理（注解配置：@Transactional()，可以加到service类的类上面或方法上面）
+         @Transactional()的属性：
+            propagation：事务传播行为（多事务方法进行调用，这个过程中事务时如何管理的）
+            isolation：隔离级别（read-uncommited,read-commited,repeatable-read,serializable）
+            timeout：超时（单位：秒，一定时间没提交就回滚）
+            readOnly：是否只读（只让查，默认false）
+            rollBackFor：回滚（设置出现那些异常，回滚）
+            noRollBackFor：不回滚（设置出现那些异常，不回滚）
+         -->
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"></property>
+    </bean>
+    <!--开启事务注解-->
+    <tx:annotation-driven transaction-manager="transactionManager"/>
+
+
+<!--     spring动态事务管理配置 -->
+<!--        <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">-->
+<!--            <property name="dataSource" ref="dataSource" />-->
+<!--        </bean>-->
+            <!--配置通知-->
+<!--        <tx:advice id="txAdvice" transaction-manager="transactionManager">-->
+                <!--配置事务参数-->
+<!--            <tx:attributes>-->
+<!--                <tx:method name="*" propagation="REQUIRED" rollback-for="java.lang.Exception"/>-->
+<!--            </tx:attributes>-->
+<!--        </tx:advice>-->
+            <!--配置切入点表达式和切面-->
+<!--        <aop:config>-->
+                <!--配置切入点表达式-->
+<!--            <aop:pointcut id="interceptorPointCut" expression="execution(* com.test.service.impl.*.*(..))" />-->
+                <!--配置切面-->
+<!--            <aop:advisor advice-ref="txAdvice" pointcut-ref="interceptorPointCut" />-->
+<!--        </aop:config>-->
+</beans>

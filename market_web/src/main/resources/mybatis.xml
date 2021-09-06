@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+
+    <!-- 使用mybatis方式全局变量设置在核心配置文件sqlMapConfig.xml的settings中
+        spring和mybatis整合的情况下，mybatis下的全局参数<settings>在spring的配置文件中设置，
+           在spring的sqlSessionFactory对象中，将配置粘入bean的property中
+
+       settings用于配置全局变量，有顺序要求，要放在environment前面，配置全局参数
+       lazyLoadingEnabled 配置懒加载，全局允许或静止懒加载，所有的任务都懒加载
+       具体实现懒加载：通过在resultMap中设置fetchType实现懒加载
+
+       <setting name="cacheEnabled" value="true"/> cacheEnabled允许二级缓存
+   -->
+
+    <!-- 全局配置参数，需要时再设置 -->
+    <settings>
+        <!-- 打印SQL-->
+        <setting name="logImpl" value="STDOUT_LOGGING"/>
+        <!--设置是否启用懒加载/延迟加载，不启用的话，所有相关联的数据都会被初始化加载"/>-->
+        <setting name="lazyLoadingEnabled" value="true"/>
+        <!--按需加载/消极加载开关 延迟加载也需要开启，默认为积极true-->
+        <setting name="aggressiveLazyLoading" value="false"/>
+        <!-- 开启二级缓存  默认也是开启的-->
+        <setting name="cacheEnabled" value="true"/>
+
+    </settings>
+
+    <!-- 指定一个包名，MyBatis会在包名下搜索需要的JavaBean-->
+    <typeAliases>
+        <package name="com.market.domain"/>
+    </typeAliases>
+</configuration>

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.market.dao.OrderDao">
+
+    <!--  查询所有订单，并声明 order 与 product 映射关系  -->
+    <resultMap id="ordersMap" type="order">
+        <id column="id" property="id"/>
+        <result column="orderNum" property="orderNum"/>
+        <result column="orderTime" property="orderTime"/>
+        <result column="orderStatus" property="orderStatus"/>
+        <result column="peopleCount" property="peopleCount"/>
+        <result column="payType" property="payType"/>
+        <result column="orderDesc" property="orderDesc"/>
+        <!-- 一对一关系 -->
+        <association property="product" column="productId" javaType="product"
+                     select="com.market.dao.ProductDao.findById" fetchType="eager"/>
+    </resultMap>
+    <!-- 查询所有订单 -->
+    <select id="findAll" resultMap="ordersMap">
+        select * from orders
+    </select>
+
+
+    <resultMap id="orderByIdMap" type="order">
+        <id column="id" property="id"/>
+        <result column="orderNum" property="orderNum"/>
+        <result column="orderTime" property="orderTime"/>
+        <result column="orderStatus" property="orderStatus"/>
+        <result column="peopleCount" property="peopleCount"/>
+        <result column="payType" property="payType"/>
+        <result column="orderDesc" property="orderDesc"/>
+        <!-- 一对一关系映射  order==>product -->
+        <association property="product" column="productId" javaType="product"
+                     select="com.market.dao.ProductDao.findById" fetchType="eager"/>
+        <!-- 一对一关系映射  order==>member -->
+        <association property="member" column="memberId" javaType="member"
+                     select="com.market.dao.MemberDao.findById" fetchType="eager"/>
+        <!-- 一对多关系映射  order==>travellers -->
+        <collection property="travellers" column="id" javaType="ArrayList" ofType="traveller"
+                    select="com.market.dao.TravellerDao.findTravellersById" fetchType="lazy"/>
+    </resultMap>
+    <!-- 根据order 的 id（英文字母组成的唯一的字符串）查询订单 -->
+    <select id="findById" parameterType="String" resultMap="orderByIdMap">
+        select * from orders where id=#{id}
+    </select>
+</mapper>
